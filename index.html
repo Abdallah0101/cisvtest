@@ -68,17 +68,17 @@
     }
     .app-header > * { position: relative; z-index: 1; }
     .app-header .logo-icon {
-      width: 64px; height: 64px;
+      width: 80px; height: 80px;
       background: rgba(255,255,255,.15);
-      border-radius: 18px;
+      border-radius: 22px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,.2);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 14px;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.25);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
     .app-header h1 {
       font-size: 1.8rem;
@@ -536,9 +536,26 @@
 
   <!-- ═══════════════ HEADER ═══════════════ -->
   <header class="app-header">
-    <div class="logo-icon">👁️</div>
-    <h1>Prescrição Óptica</h1>
-    <p>Centro de Integração do Sistema Visual</p>
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%">
+        <defs>
+          <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#bfdbfe"/>
+          </linearGradient>
+        </defs>
+        <!-- Formato do Olho -->
+        <path d="M24 128 C 72 48, 184 48, 232 128 C 184 208, 72 208, 24 128 Z" fill="none" stroke="url(#eyeGrad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Íris e lente geométrica -->
+        <circle cx="128" cy="128" r="44" fill="none" stroke="#ffffff" stroke-width="16"/>
+        <!-- Pupila -->
+        <circle cx="128" cy="128" r="16" fill="#ffffff"/>
+        <!-- Brilho (Opcional, dá profundidade) -->
+        <circle cx="114" cy="114" r="6" fill="#ffffff" opacity="0.8"/>
+      </svg>
+    </div>
+    <h1>Centro de Integração do Sistema Visual</h1>
+    <p>Prescrição Óptica Online</p>
   </header>
 
   <!-- ═══════════════ MAIN ═══════════════ -->
@@ -547,7 +564,6 @@
     <!-- ── Dados do Paciente ──────────────────── -->
     <section class="section-card">
       <div class="section-title">
-        <span class="icon">👤</span>
         Dados do Paciente
       </div>
       <div class="field-row cols-3">
@@ -569,7 +585,6 @@
     <!-- ── Tabela de Graus ────────────────────── -->
     <section class="section-card">
       <div class="section-title">
-        <span class="icon">📊</span>
         Tabela de Graus
       </div>
       <div class="grades-wrapper">
@@ -638,7 +653,6 @@
     <!-- ── Tipo de Lente + Prisma ─────────────── -->
     <section class="section-card">
       <div class="section-title">
-        <span class="icon">🔍</span>
         Tipo de Lente
       </div>
       <div class="lente-prisma-row">
@@ -688,7 +702,6 @@
     <!-- ── Tipo de Uso ────────────────────────── -->
     <section class="section-card">
       <div class="section-title">
-        <span class="icon">⏱️</span>
         Tipo de Uso
       </div>
       <div class="checkbox-grid" id="useChecks">
@@ -707,7 +720,6 @@
     <!-- ── Observações ────────────────────────── -->
     <section class="section-card">
       <div class="section-title">
-        <span class="icon">📝</span>
         Observações
       </div>
       <div class="field-group" style="margin-bottom:.75rem;">
@@ -723,7 +735,6 @@
     <!-- ── Profissional ───────────────────────── -->
     <section class="section-card">
       <div class="section-title">
-        <span class="icon">⚕️</span>
         Profissional
       </div>
       <div class="field-row cols-2">
@@ -742,31 +753,15 @@
     <div class="btn-row">
       <button class="btn btn-primary" id="btnDownload" onclick="downloadPDF()">
         <span class="spinner"></span>
-        <span class="btn-label">📄 Baixar PDF</span>
+        <span class="btn-label">Baixar PDF</span>
       </button>
       <button class="btn btn-secondary" id="btnClear" onclick="clearForm()">
-        🔄 Limpar Formulário
+        Limpar Formulário
       </button>
     </div>
 
   </main>
 
-  <!-- ═══════════════ Preview Modal ═══════════════ -->
-  <div class="modal-overlay" id="previewModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>👁️ Pré-visualização do PDF</h3>
-        <button class="modal-close" onclick="closePreview()">✕</button>
-      </div>
-      <div class="modal-body">
-        <iframe id="previewFrame" style="height:70vh;"></iframe>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closePreview()">Fechar</button>
-        <button class="btn btn-primary" onclick="closePreview();downloadPDF();">📄 Baixar</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ═══════════════ Toast ═══════════════ -->
   <div class="toast" id="toast"></div>
