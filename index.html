@@ -1074,12 +1074,13 @@
       });
 
       // Outros
-      const outrosY = startY + itemsPerCol * cbGap;
+      const outrosX = marginLeft + boxPad + colWidth; // alinhado na segunda coluna
+      const outrosY = startY + 3 * cbGap; // embaixo de FLT
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
-      doc.text('OUTROS:', marginLeft + boxPad, outrosY + 0.3);
+      doc.text('OUTROS:', outrosX, outrosY + 0.3);
       doc.setFont('helvetica', 'normal');
-      doc.text(val('inputOutros'), marginLeft + boxPad + 16, outrosY + 0.3);
+      doc.text(val('inputOutros'), outrosX + 16, outrosY + 0.3);
 
       // Prisma (right side)
       const prismaX = pageW - marginRight - 45;
@@ -1096,7 +1097,7 @@
       doc.text('OE:', prismaX, startY + 8);
       doc.text(val('prisma_oe'), prismaX + 7, startY + 8);
 
-      y = outrosY + 4;
+      y = startY + 3 * cbGap + 3;
 
       // Separador
       doc.setDrawColor(...lightGray);
@@ -1111,7 +1112,6 @@
       doc.setFontSize(8);
       doc.setTextColor(...navy);
       doc.text('TIPO DE USO', marginLeft + boxPad, y + 1);
-      y += 5;
 
       const useOptions = [
         ['Permanente', 'chk_permanente'],
@@ -1119,22 +1119,22 @@
         ['Terapia Visual', 'chk_terapia'],
       ];
 
-      let ux = marginLeft + boxPad;
+      let ux = marginLeft + boxPad + 22;
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
+      doc.setFontSize(6.5);
       doc.setTextColor(...black);
 
       useOptions.forEach((opt) => {
         const checked = $(opt[1]).checked;
         doc.setDrawColor(...navy);
         doc.setLineWidth(0.2);
-        doc.rect(ux, y - cbSize + 0.3, cbSize, cbSize);
+        doc.rect(ux, y - cbSize + 1.2, cbSize, cbSize);
         if (checked) {
-          drawCheck(ux, y - cbSize + 0.3, cbSize);
+          drawCheck(ux, y - cbSize + 1.2, cbSize);
         }
         doc.setTextColor(...black);
-        doc.text(opt[0], ux + cbSize + 2, y + 0.3);
-        ux += opt[0].length * 2.5 + 13;
+        doc.text(opt[0], ux + cbSize + 1.5, y + 1.2);
+        ux += opt[0].length * 2.3 + 9;
       });
 
       y += boxPad + 1;
