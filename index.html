@@ -911,7 +911,7 @@
       y = marginTop + 6;
       
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
+      doc.setFontSize(14);
       doc.setTextColor(...navy);
       doc.text('PRESCRIÇÃO', pageW / 2, y, { align: 'center' });
       y += 6;
@@ -1098,15 +1098,13 @@
 
       y = outrosY + 6;
 
-      // Desenhar Caixa: Tipo de Lente
+      // Separador
       doc.setDrawColor(...lightGray);
-      doc.setLineWidth(0.3);
-      doc.rect(marginLeft, lenteStartY, contentW, y - lenteStartY);
-
-      y += 6;
+      doc.setLineWidth(0.2);
+      doc.line(marginLeft, y, marginLeft + contentW, y);
+      y += 2;
 
       // ── Bloco 5: Tipo de Uso ───────────────────────
-      const usoStartY = y;
       y += boxPad;
 
       doc.setFont('helvetica', 'bold');
@@ -1139,21 +1137,19 @@
         ux += opt[0].length * 2.8 + 14;
       });
 
-      y += boxPad + 4;
-
-      // Desenhar Caixa: Tipo de Uso
-      doc.setDrawColor(...lightGray);
-      doc.setLineWidth(0.3);
-      doc.rect(marginLeft, usoStartY, contentW, y - usoStartY);
-
-      y += 6;
+      y += boxPad + 2;
 
       // ── Bloco 6: Observações ───────────────────────
       const obs = val('inputObs');
       const retorno = val('inputRetorno');
 
       if (obs || retorno) {
-        const obsStartY = y;
+        // Separador
+        doc.setDrawColor(...lightGray);
+        doc.setLineWidth(0.2);
+        doc.line(marginLeft, y, marginLeft + contentW, y);
+        y += 2;
+        
         y += boxPad;
         
         doc.setFont('helvetica', 'bold');
@@ -1180,14 +1176,14 @@
           y += 5;
         }
         y += boxPad - 1;
-        
-        // Desenhar Caixa: Observações
-        doc.setDrawColor(...lightGray);
-        doc.setLineWidth(0.3);
-        doc.rect(marginLeft, obsStartY, contentW, y - obsStartY);
-        
-        y += 8;
       }
+      
+      // Desenhar Caixa Única: Lente + Uso + Obs
+      doc.setDrawColor(...lightGray);
+      doc.setLineWidth(0.3);
+      doc.rect(marginLeft, lenteStartY, contentW, y - lenteStartY);
+
+      y += 8;
 
       // ── Bloco 7: Nota padrão ──────────────────────
       const notaTexto = 'Por favor trazer os óculos para conferência após a sua confecção. Ao usá-los inicialmente pode sentir algumas alterações, desconforto, percepção de curvas, leves tonturas e náuseas, pois trata-se de um período de adaptação, que dura em média de 2 a 3 semanas. Se os sintomas persistirem, agendar um retorno.';
