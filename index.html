@@ -908,19 +908,19 @@
       doc.text(idade ? idade + ' anos' : '', topInfoX + 50, topY);
 
       // Title Section
-      y = marginTop + 6;
+      y = marginTop + 4;
       
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
+      doc.setFontSize(13);
       doc.setTextColor(...navy);
       doc.text('PRESCRIÇÃO', pageW / 2, y, { align: 'center' });
-      y += 6;
+      y += 4;
 
       // Linha separadora
       doc.setDrawColor(...navy);
       doc.setLineWidth(0.5);
       doc.line(marginLeft, y, pageW - marginRight, y);
-      y += 6;
+      y += 4;
 
       // ── Bloco 3: Tabela de graus ───────────────────
       const tableX = marginLeft;
@@ -940,8 +940,8 @@
       tableCols.forEach(c => c.w *= scaleFactor);
       totalTableW = contentW;
 
-      const rowH = 7;
-      const headerH = 6;
+      const rowH = 6;
+      const headerH = 5.5;
 
       // Draw header row
       let cx = tableX;
@@ -989,7 +989,7 @@
 
           // Data cells
           doc.setFont('helvetica', 'normal');
-          doc.setFontSize(8);
+          doc.setFontSize(7.5);
           doc.setTextColor(...black);
           fields.forEach((fld, fi) => {
             const colDef = tableCols[fi + 2];
@@ -1023,18 +1023,18 @@
         doc.text(sec, tableX + tableCols[0].w / 2, secStart + rowH + 1, { align: 'center' });
       });
 
-      y += 8;
+      y += 5;
 
       // ── Bloco 4: Tipo de lente ─────────────────────
-      const boxPad = 4;
+      const boxPad = 3;
       const lenteStartY = y;
       y += boxPad;
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.setTextColor(...navy);
       doc.text('TIPO DE LENTE', marginLeft + boxPad, y + 1);
-      y += 7;
+      y += 5;
 
       const lenseOptions = [
         ['Monofocal', 'chk_monofocal'],
@@ -1047,11 +1047,11 @@
       ];
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(...black);
 
       const cbSize = 3;
-      const cbGap = 5;
+      const cbGap = 4;
       const colWidth = 38;
       const itemsPerCol = 4;
       let startY = y;
@@ -1076,42 +1076,42 @@
       // Outros
       const outrosY = startY + itemsPerCol * cbGap;
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.text('OUTROS:', marginLeft + boxPad, outrosY + 0.3);
       doc.setFont('helvetica', 'normal');
-      doc.text(val('inputOutros'), marginLeft + boxPad + 18, outrosY + 0.3);
+      doc.text(val('inputOutros'), marginLeft + boxPad + 16, outrosY + 0.3);
 
       // Prisma (right side)
       const prismaX = pageW - marginRight - 45;
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(...navy);
       doc.text('PRISMA', prismaX, startY - 0.5);
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(...black);
-      doc.text('OD:', prismaX, startY + 5);
-      doc.text(val('prisma_od'), prismaX + 8, startY + 5);
-      doc.text('OE:', prismaX, startY + 10);
-      doc.text(val('prisma_oe'), prismaX + 8, startY + 10);
+      doc.text('OD:', prismaX, startY + 4);
+      doc.text(val('prisma_od'), prismaX + 7, startY + 4);
+      doc.text('OE:', prismaX, startY + 8);
+      doc.text(val('prisma_oe'), prismaX + 7, startY + 8);
 
-      y = outrosY + 6;
+      y = outrosY + 4;
 
       // Separador
       doc.setDrawColor(...lightGray);
       doc.setLineWidth(0.2);
       doc.line(marginLeft, y, marginLeft + contentW, y);
-      y += 2;
+      y += 1;
 
       // ── Bloco 5: Tipo de Uso ───────────────────────
       y += boxPad;
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.setTextColor(...navy);
       doc.text('TIPO DE USO', marginLeft + boxPad, y + 1);
-      y += 7;
+      y += 5;
 
       const useOptions = [
         ['Permanente', 'chk_permanente'],
@@ -1121,7 +1121,7 @@
 
       let ux = marginLeft + boxPad;
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(...black);
 
       useOptions.forEach((opt) => {
@@ -1134,10 +1134,10 @@
         }
         doc.setTextColor(...black);
         doc.text(opt[0], ux + cbSize + 2, y + 0.3);
-        ux += opt[0].length * 2.8 + 14;
+        ux += opt[0].length * 2.5 + 13;
       });
 
-      y += boxPad + 2;
+      y += boxPad + 1;
 
       // ── Bloco 6: Observações ───────────────────────
       const obs = val('inputObs');
