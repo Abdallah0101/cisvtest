@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CISV – Prescrição Óptica</title>
+  <meta name="description" content="Sistema de prescrição óptica do Centro de Integração do Sistema Visual – CISV. Gere prescrições em PDF prontas para impressão." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a2e5a;
+      --navy-light: #2a4478;
+      --navy-dark: #0f1d3a;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-focus: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,.12), 0 12px 40px rgba(0,0,0,.06);
+      --transition: 200ms cubic-bezier(.4,0,.2,1);
+    }
+
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ──────────────────────────────────────────── */
+    .app-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--navy) 100%);
+      color: #fff;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(26,46,90, 0.15);
+    }
+    .app-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(59,130,246,.2) 0%, transparent 60%);
+      animation: headerGlow 8s ease-in-out infinite alternate;
+    }
+    @keyframes headerGlow {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(5%, -5%); }
+    }
+    .app-header > * { position: relative; z-index: 1; }
+    .app-header .logo-icon {
+      width: 64px; height: 64px;
+      background: rgba(255,255,255,.15);
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .app-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: .25rem;
+    }
+    .app-header p {
+      font-size: .9rem;
+      opacity: .8;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /* ── Main Layout ─────────────────────────────────────── */
+    .app-main {
+      max-width: 960px;
+      margin: -2rem auto 0;
+      padding: 0 1.5rem 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ── Card / Section ──────────────────────────────────── */
+    .section-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: box-shadow var(--transition), transform var(--transition);
+      animation: fadeUp .5s ease both;
+    }
+    .section-card:hover { 
+      box-shadow: var(--shadow-lg); 
+      border-color: rgba(255,255,255,0.8);
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .section-card:nth-child(2) { animation-delay: .05s; }
+    .section-card:nth-child(3) { animation-delay: .1s;  }
+    .section-card:nth-child(4) { animation-delay: .15s; }
+    .section-card:nth-child(5) { animation-delay: .2s;  }
+    .section-card:nth-child(6) { animation-delay: .25s; }
+    .section-card:nth-child(7) { animation-delay: .3s;  }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .section-title .icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 8px rgba(26,46,90, 0.2);
+    }
+
+    /* ── Form Fields ─────────────────────────────────────── */
+    .field-row {
+      display: grid;
+      gap: .75rem;
+    }
+    .field-row.cols-3 { grid-template-columns: 1fr 2fr 1fr; }
+    .field-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .field-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+    .field-group { display: flex; flex-direction: column; gap: .25rem; }
+    .field-group label {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .field-group input[type="text"],
+    .field-group input[type="number"],
+    .field-group input[type="date"],
+    .field-group textarea {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .55rem .75rem;
+      font-family: inherit;
+      font-size: .88rem;
+      color: var(--text);
+      background: #fafbfc;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+      width: 100%;
+    }
+    .field-group input:focus,
+    .field-group textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+      background: #fff;
+    }
+    .field-group textarea { resize: vertical; min-height: 60px; }
+
+    /* ── Grades Table ────────────────────────────────────── */
+    .grades-wrapper { overflow-x: auto; }
+    .grades-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+    .grades-table th {
+      background: var(--navy);
+      color: #fff;
+      padding: .5rem .35rem;
+      font-weight: 600;
+      text-align: center;
+      font-size: .72rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .grades-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+    .grades-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+    .grades-table th.section-header {
+      background: var(--navy-light);
+      font-size: .75rem;
+      letter-spacing: .08em;
+    }
+    .grades-table td {
+      padding: .3rem .2rem;
+      border: 1px solid var(--border);
+      text-align: center;
+      vertical-align: middle;
+    }
+    .grades-table td.eye-label {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: var(--navy);
+      width: 40px;
+      font-size: .78rem;
+    }
+    .grades-table input {
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: .35rem .2rem;
+      width: 100%;
+      text-align: center;
+      font-family: inherit;
+      font-size: .82rem;
+      background: transparent;
+      transition: border-color var(--transition), background var(--transition);
+      outline: none;
+    }
+    .grades-table input:hover { background: #f8fafc; }
+    .grades-table input:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(59,130,246,.1);
+    }
+
+    /* ── Checkboxes ──────────────────────────────────────── */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: .6rem;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .6rem .75rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.6);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .checkbox-item:hover {
+      background: rgba(238,242,255,0.7);
+      border-color: rgba(59,130,246,0.3);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+    .checkbox-item.checked {
+      background: #eef2ff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    }
+    .checkbox-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 5px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .checkbox-item:hover input[type="checkbox"] {
+      border-color: var(--accent);
+    }
+    .checkbox-item input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .checkbox-item input[type="checkbox"]:checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      position: absolute;
+    }
+    .checkbox-item span {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── Prisma Box ──────────────────────────────────────── */
+    .prisma-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .75rem;
+    }
+    .prisma-box .prisma-title {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: .5rem;
+    }
+
+    /* ── Lente + Prisma Layout ───────────────────────────── */
+    .lente-prisma-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn-row {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1.5rem 0;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .7rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(26,46,90,.35);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(26,46,90,.45);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #fff;
+      color: var(--navy);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background: #f1f5f9;
+      border-color: var(--navy);
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59,130,246,.3);
+    }
+    .btn-accent:hover {
+      box-shadow: 0 6px 20px rgba(59,130,246,.4);
+      transform: translateY(-1px);
+    }
+
+    /* ── Preview Modal ───────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      animation: fadeBg .2s ease;
+    }
+    .modal-overlay.active { display: flex; }
+    @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content {
+      background: #fff;
+      border-radius: var(--radius);
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn .3s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.92) translateY(12px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-size: 1rem; color: var(--navy); }
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none;
+      background: #f1f5f9;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .modal-close:hover { background: #e2e8f0; color: var(--text); }
+    .modal-body { padding: 1.25rem; text-align: center; }
+    .modal-body canvas,
+    .modal-body iframe {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .modal-footer {
+      padding: .75rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: .5rem;
+    }
+
+    /* ── Toast ────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--navy);
+      color: #fff;
+      padding: .75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: .85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 2000;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all .3s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    .app-footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: .75rem;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .field-row.cols-3 { grid-template-columns: 1fr 1fr; }
+      .field-row.cols-4 { grid-template-columns: 1fr 1fr; }
+      .lente-prisma-row { grid-template-columns: 1fr; }
+      .checkbox-grid { grid-template-columns: 1fr 1fr; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { justify-content: center; }
+      .app-header h1 { font-size: 1.3rem; }
+    }
+
+    /* ── Optometrist Config ──────────────────────────────── */
+    .config-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-top: .5rem;
+      padding: .3rem .6rem;
+      border-radius: 6px;
+      transition: all var(--transition);
+    }
+    .config-toggle:hover { background: #f1f5f9; color: var(--text); }
+    .config-fields {
+      display: none;
+      margin-top: .75rem;
+    }
+    .config-fields.open { display: block; }
+
+    /* ── Spinner ──────────────────────────────────────────── */
+    .btn .spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    .btn.loading .spinner { display: inline-block; }
+    .btn.loading .btn-label { opacity: .6; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header class="app-header">
+    <div class="logo-icon">👁️</div>
+    <h1>Prescrição Óptica</h1>
+    <p>Centro de Integração do Sistema Visual</p>
+  </header>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main class="app-main" id="appMain">
+
+    <!-- ── Dados do Paciente ──────────────────── -->
+    <section class="section-card">
+      <div class="section-title">
+        <span class="icon">👤</span>
+        Dados do Paciente
+      </div>
+      <div class="field-row cols-3">
+        <div class="field-group">
+          <label for="inputData">Data</label>
+          <input type="date" id="inputData" />
+        </div>
+        <div class="field-group">
+          <label for="inputPaciente">Paciente</label>
+          <input type="text" id="inputPaciente" placeholder="Nome completo" />
+        </div>
+        <div class="field-group">
+          <label for="inputIdade">Idade</label>
+          <input type="number" id="inputIdade" min="0" max="150" placeholder="Anos" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tabela de Graus ────────────────────── -->
+    <section class="section-card">
+      <div class="section-title">
+        <span class="icon">📊</span>
+        Tabela de Graus
+      </div>
+      <div class="grades-wrapper">
+        <table class="grades-table" id="gradesTable">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:55px;"></th>
+              <th rowspan="2" style="width:40px;"></th>
+              <th colspan="3">Refração</th>
+              <th rowspan="2">AV c/c VL</th>
+              <th rowspan="2">ADD</th>
+              <th rowspan="2">AV c/c VP</th>
+            </tr>
+            <tr>
+              <th>ESF</th>
+              <th>CIL</th>
+              <th>EIXO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- LONGE -->
+            <tr>
+              <td class="eye-label" rowspan="2" style="background:var(--navy);color:#fff;font-size:.72rem;letter-spacing:.08em;">LONGE</td>
+              <td class="eye-label">OD</td>
+              <td><input type="text" id="longe_od_esf" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_od_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_od_eixo" placeholder="0–180" /></td>
+              <td><input type="text" id="longe_od_avccvl" placeholder="0.0" /></td>
+              <td><input type="text" id="longe_od_add" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_od_avccvp" placeholder="0.0" /></td>
+            </tr>
+            <tr>
+              <td class="eye-label">OE</td>
+              <td><input type="text" id="longe_oe_esf" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_oe_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_oe_eixo" placeholder="0–180" /></td>
+              <td><input type="text" id="longe_oe_avccvl" placeholder="0.0" /></td>
+              <td><input type="text" id="longe_oe_add" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_oe_avccvp" placeholder="0.0" /></td>
+            </tr>
+            <!-- PERTO -->
+            <tr>
+              <td class="eye-label" rowspan="2" style="background:var(--navy);color:#fff;font-size:.72rem;letter-spacing:.08em;">PERTO</td>
+              <td class="eye-label">OD</td>
+              <td><input type="text" id="perto_od_esf" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_od_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_od_eixo" placeholder="0–180" /></td>
+              <td><input type="text" id="perto_od_avccvl" placeholder="0.0" /></td>
+              <td><input type="text" id="perto_od_add" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_od_avccvp" placeholder="0.0" /></td>
+            </tr>
+            <tr>
+              <td class="eye-label">OE</td>
+              <td><input type="text" id="perto_oe_esf" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_oe_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_oe_eixo" placeholder="0–180" /></td>
+              <td><input type="text" id="perto_oe_avccvl" placeholder="0.0" /></td>
+              <td><input type="text" id="perto_oe_add" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_oe_avccvp" placeholder="0.0" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Tipo de Lente + Prisma ─────────────── -->
+    <section class="section-card">
+      <div class="section-title">
+        <span class="icon">🔍</span>
+        Tipo de Lente
+      </div>
+      <div class="lente-prisma-row">
+        <div>
+          <div class="checkbox-grid" id="lenseChecks">
+            <label class="checkbox-item" id="item-monofocal">
+              <input type="checkbox" id="chk_monofocal" /><span>Monofocal</span>
+            </label>
+            <label class="checkbox-item" id="item-bifocal">
+              <input type="checkbox" id="chk_bifocal" /><span>Bifocal</span>
+            </label>
+            <label class="checkbox-item" id="item-multifocal">
+              <input type="checkbox" id="chk_multifocal" /><span>Multifocal</span>
+            </label>
+            <label class="checkbox-item" id="item-lc">
+              <input type="checkbox" id="chk_lc" /><span>L.C.</span>
+            </label>
+            <label class="checkbox-item" id="item-antirreflexo">
+              <input type="checkbox" id="chk_antirreflexo" /><span>Antirreflexo</span>
+            </label>
+            <label class="checkbox-item" id="item-fotocromatico">
+              <input type="checkbox" id="chk_fotocromatico" /><span>Fotocromático</span>
+            </label>
+            <label class="checkbox-item" id="item-flt">
+              <input type="checkbox" id="chk_flt" /><span>FLT</span>
+            </label>
+          </div>
+          <div class="field-group" style="margin-top:.75rem;">
+            <label for="inputOutros">Outros</label>
+            <input type="text" id="inputOutros" placeholder="Especifique..." />
+          </div>
+        </div>
+        <div class="prisma-box">
+          <div class="prisma-title">Prisma</div>
+          <div class="field-group" style="margin-bottom:.5rem;">
+            <label for="prisma_od">OD</label>
+            <input type="text" id="prisma_od" placeholder="—" style="width:100px;" />
+          </div>
+          <div class="field-group">
+            <label for="prisma_oe">OE</label>
+            <input type="text" id="prisma_oe" placeholder="—" style="width:100px;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Tipo de Uso ────────────────────────── -->
+    <section class="section-card">
+      <div class="section-title">
+        <span class="icon">⏱️</span>
+        Tipo de Uso
+      </div>
+      <div class="checkbox-grid" id="useChecks">
+        <label class="checkbox-item" id="item-permanente">
+          <input type="checkbox" id="chk_permanente" /><span>Permanente</span>
+        </label>
+        <label class="checkbox-item" id="item-continuo">
+          <input type="checkbox" id="chk_continuo" /><span>Contínuo</span>
+        </label>
+        <label class="checkbox-item" id="item-terapia">
+          <input type="checkbox" id="chk_terapia" /><span>Terapia Visual</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ── Observações ────────────────────────── -->
+    <section class="section-card">
+      <div class="section-title">
+        <span class="icon">📝</span>
+        Observações
+      </div>
+      <div class="field-group" style="margin-bottom:.75rem;">
+        <label for="inputObs">Observações</label>
+        <textarea id="inputObs" rows="3" placeholder="Observações adicionais..."></textarea>
+      </div>
+      <div class="field-group">
+        <label for="inputRetorno">Retorno</label>
+        <input type="text" id="inputRetorno" placeholder="Ex: 6 meses, 1 ano..." />
+      </div>
+    </section>
+
+    <!-- ── Profissional ───────────────────────── -->
+    <section class="section-card">
+      <div class="section-title">
+        <span class="icon">⚕️</span>
+        Profissional
+      </div>
+      <div class="field-row cols-2">
+        <div class="field-group">
+          <label for="inputOptNome">Nome do Optometrista</label>
+          <input type="text" id="inputOptNome" value="Amidio Jussa Ajape Paissane" />
+        </div>
+        <div class="field-group">
+          <label for="inputOptCRO">CRO</label>
+          <input type="text" id="inputOptCRO" value="Optometrista CRO0-SC 1312" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Ações ──────────────────────────────── -->
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnDownload" onclick="downloadPDF()">
+        <span class="spinner"></span>
+        <span class="btn-label">📄 Baixar PDF</span>
+      </button>
+      <button class="btn btn-secondary" id="btnClear" onclick="clearForm()">
+        🔄 Limpar Formulário
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════ Preview Modal ═══════════════ -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>👁️ Pré-visualização do PDF</h3>
+        <button class="modal-close" onclick="closePreview()">✕</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="previewFrame" style="height:70vh;"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePreview()">Fechar</button>
+        <button class="btn btn-primary" onclick="closePreview();downloadPDF();">📄 Baixar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ Toast ═══════════════ -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ═══════════════ Footer ═══════════════ -->
+  <footer class="app-footer">
+    CISV – Centro de Integração do Sistema Visual &copy; <span id="footerYear"></span>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════════════════ -->
+  <script>
+    /* ── Helpers ────────────────────────────────────── */
+    const $ = (id) => document.getElementById(id);
+    const val = (id) => ($(id) ? $(id).value.trim() : '');
+
+    /* ── Init date ─────────────────────────────────── */
+    (function initDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      $('inputData').value = `${yyyy}-${mm}-${dd}`;
+      $('footerYear').textContent = yyyy;
+    })();
+
+    /* ── Checkbox visual toggle ────────────────────── */
+    document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.checkbox-item').classList.toggle('checked', cb.checked);
+      });
+    });
+
+    /* ── Toast ─────────────────────────────────────── */
+    function showToast(msg, duration = 2500) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    /* ── Clear Form ────────────────────────────────── */
+    function clearForm() {
+      document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
+        if (el.id === 'inputOptNome' || el.id === 'inputOptCRO') return;
+        el.value = '';
+      });
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+        cb.closest('.checkbox-item').classList.remove('checked');
+      });
+      // Reset date
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      $('inputData').value = `${yyyy}-${mm}-${dd}`;
+      showToast('Formulário limpo ✓');
+    }
+
+    /* ══════════════════════════════════════════════════
+       PDF GENERATION (jsPDF)
+       ══════════════════════════════════════════════════ */
+    function formatDateBR(isoStr) {
+      if (!isoStr) return '';
+      const [y, m, d] = isoStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function buildPDF() {
+      const { jsPDF } = window.jspdf;
+      // A5: 148mm × 210mm
+      const doc = new jsPDF({ unit: 'mm', format: 'a5', orientation: 'portrait' });
+
+      // ── Margins (mm) ───────────────────────────────
+      const marginTop    = 32;   // 3.2 cm – reserved for pre-printed logo area height
+      const marginLeft   = 5;    // 0.5 cm – left margin for content (logo is 4.5cm wide on paper)
+      const marginRight  = 10;   // 1 cm
+      const marginBottom = 25;   // 2.5 cm – reserved for pre-printed footer
+      const pageW = 148;
+      const pageH = 210;
+      const contentW = pageW - marginLeft - marginRight;
+
+      // Starting X for the header area (to the right of the logo space)
+      const logoSpaceW = 45; // 4.5 cm reserved for logo width
+      const headerStartX = logoSpaceW; // header text starts after logo space
+      const headerContentW = pageW - logoSpaceW - marginRight;
+
+      let y = marginTop;
+
+      // ── Colors ─────────────────────────────────────
+      const navy = [26, 46, 90];
+      const white = [255, 255, 255];
+      const gray = [100, 116, 139];
+      const lightGray = [204, 204, 204];
+      const black = [30, 41, 59];
+
+      // Drawing helper for checkmark
+      const drawCheck = (x, y, s) => {
+        doc.setDrawColor(...navy);
+        doc.setLineWidth(0.4);
+        doc.line(x + s*0.25, y + s*0.5, x + s*0.45, y + s*0.75);
+        doc.line(x + s*0.45, y + s*0.75, x + s*0.85, y + s*0.2);
+      };
+
+      // ── Bloco 1: Patient info & Header ─────────────────────
+      const dataStr = formatDateBR(val('inputData'));
+      const paciente = val('inputPaciente');
+      const idade = val('inputIdade');
+
+      // Top info starts to the right of logo area
+      const topInfoX = logoSpaceW + 5;
+      let topY = 12;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...navy);
+      doc.text('PACIENTE:', topInfoX, topY);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...black);
+      doc.text(paciente, topInfoX + 22, topY);
+
+      topY += 6;
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...navy);
+      doc.text('DATA:', topInfoX, topY);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...black);
+      doc.text(dataStr, topInfoX + 11, topY);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...navy);
+      doc.text('IDADE:', topInfoX + 38, topY);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...black);
+      doc.text(idade ? idade + ' anos' : '', topInfoX + 50, topY);
+
+      // Title Section
+      y = marginTop + 6;
+      
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(...navy);
+      doc.text('PRESCRIÇÃO', pageW / 2, y, { align: 'center' });
+      y += 6;
+
+      // Linha separadora
+      doc.setDrawColor(...navy);
+      doc.setLineWidth(0.5);
+      doc.line(marginLeft, y, pageW - marginRight, y);
+      y += 6;
+
+      // ── Bloco 3: Tabela de graus ───────────────────
+      const tableX = marginLeft;
+      const tableCols = [
+        { label: '',        w: 13 },
+        { label: '',        w: 10 },
+        { label: 'ESF',     w: 14 },
+        { label: 'CIL',     w: 14 },
+        { label: 'EIXO',    w: 13 },
+        { label: 'AV c/c VL', w: 18 },
+        { label: 'ADD',     w: 14 },
+        { label: 'AV c/c VP', w: 18 },
+      ];
+      let totalTableW = tableCols.reduce((s, c) => s + c.w, 0);
+      // Scale to fit content width
+      const scaleFactor = contentW / totalTableW;
+      tableCols.forEach(c => c.w *= scaleFactor);
+      totalTableW = contentW;
+
+      const rowH = 7;
+      const headerH = 6;
+
+      // Draw header row
+      let cx = tableX;
+      doc.setFillColor(...navy);
+      doc.rect(tableX, y, totalTableW, headerH + 0.5, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(...white);
+      tableCols.forEach((col, i) => {
+        if (i >= 2) {
+          doc.text(col.label, cx + col.w / 2, y + (headerH + 0.5) / 2 + 1.5, { align: 'center' });
+        }
+        cx += col.w;
+      });
+      y += headerH + 0.5;
+
+      // Table data rows
+      const sections = ['LONGE', 'PERTO'];
+      const eyes = ['OD', 'OE'];
+      const fields = ['esf', 'cil', 'eixo', 'avccvl', 'add', 'avccvp'];
+
+      sections.forEach(sec => {
+        const secStart = y;
+        const secKey = sec.toLowerCase();
+        
+        eyes.forEach((eye, ei) => {
+          cx = tableX;
+          // Draw row borders
+          doc.setDrawColor(...lightGray);
+          doc.setLineWidth(0.3);
+          doc.rect(tableX, y, totalTableW, rowH);
+
+          cx += tableCols[0].w;
+
+          // Eye label
+          doc.setFillColor(241, 245, 249);
+          doc.rect(cx, y, tableCols[1].w, rowH, 'F');
+          doc.setDrawColor(...lightGray);
+          doc.rect(cx, y, tableCols[1].w, rowH);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...navy);
+          doc.text(eye, cx + tableCols[1].w / 2, y + rowH / 2 + 2, { align: 'center' });
+          cx += tableCols[1].w;
+
+          // Data cells
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(...black);
+          fields.forEach((fld, fi) => {
+            const colDef = tableCols[fi + 2];
+            doc.setDrawColor(...lightGray);
+            doc.rect(cx, y, colDef.w, rowH);
+            
+            let v = val(`${secKey}_${eye.toLowerCase()}_${fld}`);
+            
+            // Fixed degree sign for EIXO
+            if (fld === 'eixo') {
+              v = v ? v + '°' : '°';
+            }
+
+            doc.text(v || '', cx + colDef.w / 2, y + rowH / 2 + 2, { align: 'center' });
+            cx += colDef.w;
+          });
+          y += rowH;
+        });
+
+        // SECTION LABEL - drawn after to overlay the horizontal lines
+        doc.setFillColor(...navy);
+        // overdraw horizontal borders just to be clean
+        doc.setDrawColor(...lightGray);
+        doc.setLineWidth(0.3);
+        doc.rect(tableX, secStart, tableCols[0].w, rowH * 2, 'F');
+        doc.rect(tableX, secStart, tableCols[0].w, rowH * 2);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(...white);
+        doc.text(sec, tableX + tableCols[0].w / 2, secStart + rowH + 1, { align: 'center' });
+      });
+
+      y += 8;
+
+      // ── Bloco 4: Tipo de lente ─────────────────────
+      const boxPad = 4;
+      const lenteStartY = y;
+      y += boxPad;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...navy);
+      doc.text('TIPO DE LENTE', marginLeft + boxPad, y + 1);
+      y += 7;
+
+      const lenseOptions = [
+        ['Monofocal', 'chk_monofocal'],
+        ['Bifocal', 'chk_bifocal'],
+        ['Multifocal', 'chk_multifocal'],
+        ['L.C.', 'chk_lc'],
+        ['Antirreflexo', 'chk_antirreflexo'],
+        ['Fotocromático', 'chk_fotocromatico'],
+        ['FLT', 'chk_flt'],
+      ];
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...black);
+
+      const cbSize = 3;
+      const cbGap = 5;
+      const colWidth = 38;
+      const itemsPerCol = 4;
+      let startY = y;
+
+      lenseOptions.forEach((opt, i) => {
+        const col = Math.floor(i / itemsPerCol);
+        const row = i % itemsPerCol;
+        const lx = marginLeft + boxPad + col * colWidth;
+        const ly = startY + row * cbGap;
+
+        const checked = $(opt[1]).checked;
+        doc.setDrawColor(...navy);
+        doc.setLineWidth(0.2);
+        doc.rect(lx, ly - cbSize + 0.3, cbSize, cbSize);
+        if (checked) {
+          drawCheck(lx, ly - cbSize + 0.3, cbSize);
+        }
+        doc.setTextColor(...black);
+        doc.text(opt[0], lx + cbSize + 2, ly + 0.3);
+      });
+
+      // Outros
+      const outrosY = startY + itemsPerCol * cbGap;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.text('OUTROS:', marginLeft + boxPad, outrosY + 0.3);
+      doc.setFont('helvetica', 'normal');
+      doc.text(val('inputOutros'), marginLeft + boxPad + 18, outrosY + 0.3);
+
+      // Prisma (right side)
+      const prismaX = pageW - marginRight - 45;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(...navy);
+      doc.text('PRISMA', prismaX, startY - 0.5);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...black);
+      doc.text('OD:', prismaX, startY + 5);
+      doc.text(val('prisma_od'), prismaX + 8, startY + 5);
+      doc.text('OE:', prismaX, startY + 10);
+      doc.text(val('prisma_oe'), prismaX + 8, startY + 10);
+
+      y = outrosY + 6;
+
+      // Desenhar Caixa: Tipo de Lente
+      doc.setDrawColor(...lightGray);
+      doc.setLineWidth(0.3);
+      doc.rect(marginLeft, lenteStartY, contentW, y - lenteStartY);
+
+      y += 6;
+
+      // ── Bloco 5: Tipo de Uso ───────────────────────
+      const usoStartY = y;
+      y += boxPad;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...navy);
+      doc.text('TIPO DE USO', marginLeft + boxPad, y + 1);
+      y += 7;
+
+      const useOptions = [
+        ['Permanente', 'chk_permanente'],
+        ['Contínuo', 'chk_continuo'],
+        ['Terapia Visual', 'chk_terapia'],
+      ];
+
+      let ux = marginLeft + boxPad;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...black);
+
+      useOptions.forEach((opt) => {
+        const checked = $(opt[1]).checked;
+        doc.setDrawColor(...navy);
+        doc.setLineWidth(0.2);
+        doc.rect(ux, y - cbSize + 0.3, cbSize, cbSize);
+        if (checked) {
+          drawCheck(ux, y - cbSize + 0.3, cbSize);
+        }
+        doc.setTextColor(...black);
+        doc.text(opt[0], ux + cbSize + 2, y + 0.3);
+        ux += opt[0].length * 2.8 + 14;
+      });
+
+      y += boxPad + 4;
+
+      // Desenhar Caixa: Tipo de Uso
+      doc.setDrawColor(...lightGray);
+      doc.setLineWidth(0.3);
+      doc.rect(marginLeft, usoStartY, contentW, y - usoStartY);
+
+      y += 6;
+
+      // ── Bloco 6: Observações ───────────────────────
+      const obs = val('inputObs');
+      const retorno = val('inputRetorno');
+
+      if (obs || retorno) {
+        const obsStartY = y;
+        y += boxPad;
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...navy);
+        doc.text('OBSERVAÇÕES', marginLeft + boxPad, y + 1);
+        y += 7;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(...black);
+        if (obs) {
+          const obsLines = doc.splitTextToSize(obs, contentW - boxPad*2);
+          doc.text(obsLines, marginLeft + boxPad, y);
+          y += obsLines.length * 4;
+        }
+
+        if (retorno) {
+          y += 1;
+          doc.setFont('helvetica', 'bold');
+          doc.text('RETORNO:', marginLeft + boxPad, y);
+          doc.setFont('helvetica', 'normal');
+          doc.text(retorno, marginLeft + boxPad + 19, y);
+          y += 5;
+        }
+        y += boxPad - 1;
+        
+        // Desenhar Caixa: Observações
+        doc.setDrawColor(...lightGray);
+        doc.setLineWidth(0.3);
+        doc.rect(marginLeft, obsStartY, contentW, y - obsStartY);
+        
+        y += 8;
+      }
+
+      // ── Bloco 7: Nota padrão ──────────────────────
+      const notaTexto = 'Por favor trazer os óculos para conferência após a sua confecção. Ao usá-los inicialmente pode sentir algumas alterações, desconforto, percepção de curvas, leves tonturas e náuseas, pois trata-se de um período de adaptação, que dura em média de 2 a 3 semanas. Se os sintomas persistirem, agendar um retorno.';
+
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(5.5);
+      doc.setTextColor(...gray);
+      const notaLines = doc.splitTextToSize(notaTexto, contentW);
+      doc.text(notaLines, marginLeft, y);
+      y += notaLines.length * 2.5 + 4;
+
+      // ── Assinatura ────────────────────────────────
+      // Line for signature
+      const sigLineW = 60;
+      const sigX = marginLeft + (contentW - sigLineW) / 2;
+      doc.setDrawColor(...navy);
+      doc.setLineWidth(0.3);
+      doc.line(sigX, y, sigX + sigLineW, y);
+      y += 3;
+
+      const optNome = val('inputOptNome');
+      const optCRO = val('inputOptCRO');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(...navy);
+      doc.text(optNome, marginLeft + contentW / 2, y, { align: 'center' });
+      y += 3;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(...gray);
+      doc.text(optCRO, marginLeft + contentW / 2, y, { align: 'center' });
+
+      return doc;
+    }
+
+    /* ── Download PDF ──────────────────────────────── */
+    function downloadPDF() {
+      const btn = $('btnDownload');
+      btn.classList.add('loading');
+      try {
+        const doc = buildPDF();
+        const paciente = val('inputPaciente').replace(/\s+/g, '').toLowerCase();
+        const idade = val('inputIdade');
+        
+        let filename = 'prescricao.pdf';
+        if (paciente) {
+          filename = `${paciente}${idade ? idade : ''}.pdf`;
+        }
+        
+        doc.save(filename);
+        showToast('PDF gerado com sucesso ✓');
+      } catch (e) {
+        console.error(e);
+        showToast('Erro ao gerar PDF ✗');
+      }
+      setTimeout(() => btn.classList.remove('loading'), 600);
+    }
+  </script>
+</body>
+</html>
