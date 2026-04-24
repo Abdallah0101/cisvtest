@@ -838,7 +838,7 @@
       const doc = new jsPDF({ unit: 'mm', format: 'a5', orientation: 'portrait' });
 
       // ── Margins (mm) ───────────────────────────────
-      const marginTop    = 32;   // 3.2 cm – reserved for pre-printed logo area height
+      const marginTop    = 52;   // 5.2 cm – reserved for pre-printed logo area height
       const marginLeft   = 5;    // 0.5 cm – left margin for content (logo is 4.5cm wide on paper)
       const marginRight  = 10;   // 1 cm
       const marginBottom = 25;   // 2.5 cm – reserved for pre-printed footer
@@ -874,8 +874,8 @@
       const idade = val('inputIdade');
 
       // Top info starts to the right of logo area
-      const topInfoX = logoSpaceW + 5;
-      let topY = 12;
+      const topInfoX = logoSpaceW + 15;
+      let topY = 32;
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.5);
