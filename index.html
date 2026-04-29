@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CISV – Prescrição Óptica</title>
-  <meta name="description" content="Sistema de prescrição óptica do Centro de Integração do Sistema Visual – CISV. Gere prescrições em PDF prontas para impressão." />
+  <meta name="description"
+    content="Sistema de prescrição óptica do Centro de Integração do Sistema Visual – CISV. Gere prescrições em PDF prontas para impressão." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     /* ── Reset & Base ─────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --navy: #1a2e5a;
@@ -30,12 +39,16 @@
       --warning: #f59e0b;
       --radius: 12px;
       --radius-sm: 8px;
-      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
-      --shadow-lg: 0 4px 16px rgba(0,0,0,.12), 0 12px 40px rgba(0,0,0,.06);
-      --transition: 200ms cubic-bezier(.4,0,.2,1);
+      --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 12px rgba(0, 0, 0, .04);
+      --shadow-lg: 0 4px 16px rgba(0, 0, 0, .12), 0 12px 40px rgba(0, 0, 0, .06);
+      --transition: 200ms cubic-bezier(.4, 0, .2, 1);
     }
 
-    html { font-size: 15px; scroll-behavior: smooth; }
+    html {
+      font-size: 15px;
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
@@ -52,24 +65,39 @@
       text-align: center;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(26,46,90, 0.15);
+      box-shadow: 0 4px 20px rgba(26, 46, 90, 0.15);
     }
+
     .app-header::before {
       content: '';
       position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at 30% 50%, rgba(59,130,246,.2) 0%, transparent 60%);
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(59, 130, 246, .2) 0%, transparent 60%);
       animation: headerGlow 8s ease-in-out infinite alternate;
     }
+
     @keyframes headerGlow {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(5%, -5%); }
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(5%, -5%);
+      }
     }
-    .app-header > * { position: relative; z-index: 1; }
+
+    .app-header>* {
+      position: relative;
+      z-index: 1;
+    }
+
     .app-header .logo-icon {
-      width: 80px; height: 80px;
-      background: rgba(255,255,255,.15);
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, .15);
       border-radius: 22px;
       display: inline-flex;
       align-items: center;
@@ -77,15 +105,17 @@
       padding: 14px;
       margin-bottom: 1.25rem;
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,.25);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255, 255, 255, .25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
+
     .app-header h1 {
       font-size: 1.8rem;
       font-weight: 800;
       letter-spacing: -.02em;
       margin-bottom: .25rem;
     }
+
     .app-header p {
       font-size: .9rem;
       opacity: .8;
@@ -116,20 +146,47 @@
       transition: box-shadow var(--transition), transform var(--transition);
       animation: fadeUp .5s ease both;
     }
-    .section-card:hover { 
-      box-shadow: var(--shadow-lg); 
-      border-color: rgba(255,255,255,0.8);
+
+    .section-card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(255, 255, 255, 0.8);
     }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .section-card:nth-child(2) { animation-delay: .05s; }
-    .section-card:nth-child(3) { animation-delay: .1s;  }
-    .section-card:nth-child(4) { animation-delay: .15s; }
-    .section-card:nth-child(5) { animation-delay: .2s;  }
-    .section-card:nth-child(6) { animation-delay: .25s; }
-    .section-card:nth-child(7) { animation-delay: .3s;  }
+
+    .section-card:nth-child(2) {
+      animation-delay: .05s;
+    }
+
+    .section-card:nth-child(3) {
+      animation-delay: .1s;
+    }
+
+    .section-card:nth-child(4) {
+      animation-delay: .15s;
+    }
+
+    .section-card:nth-child(5) {
+      animation-delay: .2s;
+    }
+
+    .section-card:nth-child(6) {
+      animation-delay: .25s;
+    }
+
+    .section-card:nth-child(7) {
+      animation-delay: .3s;
+    }
 
     .section-title {
       display: flex;
@@ -142,8 +199,10 @@
       text-transform: uppercase;
       letter-spacing: .05em;
     }
+
     .section-title .icon {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, var(--navy), var(--navy-light));
       border-radius: var(--radius-sm);
       display: inline-flex;
@@ -152,7 +211,7 @@
       font-size: 1.1rem;
       color: #fff;
       flex-shrink: 0;
-      box-shadow: 0 4px 8px rgba(26,46,90, 0.2);
+      box-shadow: 0 4px 8px rgba(26, 46, 90, 0.2);
     }
 
     /* ── Form Fields ─────────────────────────────────────── */
@@ -160,11 +219,25 @@
       display: grid;
       gap: .75rem;
     }
-    .field-row.cols-3 { grid-template-columns: 1fr 2fr 1fr; }
-    .field-row.cols-2 { grid-template-columns: 1fr 1fr; }
-    .field-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
 
-    .field-group { display: flex; flex-direction: column; gap: .25rem; }
+    .field-row.cols-3 {
+      grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    .field-row.cols-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field-row.cols-4 {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+    }
+
     .field-group label {
       font-size: .72rem;
       font-weight: 600;
@@ -172,6 +245,7 @@
       text-transform: uppercase;
       letter-spacing: .06em;
     }
+
     .field-group input[type="text"],
     .field-group input[type="number"],
     .field-group input[type="date"],
@@ -187,21 +261,30 @@
       outline: none;
       width: 100%;
     }
+
     .field-group input:focus,
     .field-group textarea:focus {
       border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
       background: #fff;
     }
-    .field-group textarea { resize: vertical; min-height: 60px; }
+
+    .field-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
 
     /* ── Grades Table ────────────────────────────────────── */
-    .grades-wrapper { overflow-x: auto; }
+    .grades-wrapper {
+      overflow-x: auto;
+    }
+
     .grades-table {
       width: 100%;
       border-collapse: collapse;
       font-size: .82rem;
     }
+
     .grades-table th {
       background: var(--navy);
       color: #fff;
@@ -213,19 +296,28 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
-    .grades-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
-    .grades-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+
+    .grades-table th:first-child {
+      border-radius: var(--radius-sm) 0 0 0;
+    }
+
+    .grades-table th:last-child {
+      border-radius: 0 var(--radius-sm) 0 0;
+    }
+
     .grades-table th.section-header {
       background: var(--navy-light);
       font-size: .75rem;
       letter-spacing: .08em;
     }
+
     .grades-table td {
       padding: .3rem .2rem;
       border: 1px solid var(--border);
       text-align: center;
       vertical-align: middle;
     }
+
     .grades-table td.eye-label {
       background: #f1f5f9;
       font-weight: 700;
@@ -233,6 +325,7 @@
       width: 40px;
       font-size: .78rem;
     }
+
     .grades-table input {
       border: 1px solid transparent;
       border-radius: 4px;
@@ -245,11 +338,15 @@
       transition: border-color var(--transition), background var(--transition);
       outline: none;
     }
-    .grades-table input:hover { background: #f8fafc; }
+
+    .grades-table input:hover {
+      background: #f8fafc;
+    }
+
     .grades-table input:focus {
       border-color: var(--accent);
       background: #fff;
-      box-shadow: 0 0 0 2px rgba(59,130,246,.1);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, .1);
     }
 
     /* ── Checkboxes ──────────────────────────────────────── */
@@ -258,34 +355,39 @@
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: .6rem;
     }
+
     .checkbox-item {
       display: flex;
       align-items: center;
       gap: .6rem;
       padding: .6rem .75rem;
       border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.6);
+      background: rgba(255, 255, 255, 0.6);
       border: 1.5px solid var(--border);
       cursor: pointer;
       transition: all var(--transition);
       user-select: none;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
+
     .checkbox-item:hover {
-      background: rgba(238,242,255,0.7);
-      border-color: rgba(59,130,246,0.3);
+      background: rgba(238, 242, 255, 0.7);
+      border-color: rgba(59, 130, 246, 0.3);
       transform: translateY(-1px);
       box-shadow: var(--shadow);
     }
+
     .checkbox-item.checked {
       background: #eef2ff;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
     }
+
     .checkbox-item input[type="checkbox"] {
       appearance: none;
       -webkit-appearance: none;
-      width: 20px; height: 20px;
+      width: 20px;
+      height: 20px;
       border: 2px solid var(--border);
       border-radius: 5px;
       background: #fff;
@@ -296,13 +398,16 @@
       cursor: pointer;
       position: relative;
     }
+
     .checkbox-item:hover input[type="checkbox"] {
       border-color: var(--accent);
     }
+
     .checkbox-item input[type="checkbox"]:checked {
       background: var(--accent);
       border-color: var(--accent);
     }
+
     .checkbox-item input[type="checkbox"]:checked::after {
       content: '✓';
       color: #fff;
@@ -310,6 +415,7 @@
       font-weight: 800;
       position: absolute;
     }
+
     .checkbox-item span {
       font-size: .85rem;
       font-weight: 600;
@@ -323,6 +429,7 @@
       border-radius: var(--radius-sm);
       padding: .75rem;
     }
+
     .prisma-box .prisma-title {
       font-size: .72rem;
       font-weight: 700;
@@ -348,6 +455,7 @@
       justify-content: center;
       padding: 1.5rem 0;
     }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -363,32 +471,41 @@
       text-decoration: none;
       white-space: nowrap;
     }
-    .btn:active { transform: scale(.97); }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
     .btn-primary {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
       color: #fff;
-      box-shadow: 0 4px 14px rgba(26,46,90,.35);
+      box-shadow: 0 4px 14px rgba(26, 46, 90, .35);
     }
+
     .btn-primary:hover {
-      box-shadow: 0 6px 20px rgba(26,46,90,.45);
+      box-shadow: 0 6px 20px rgba(26, 46, 90, .45);
       transform: translateY(-1px);
     }
+
     .btn-secondary {
       background: #fff;
       color: var(--navy);
       border-color: var(--border);
     }
+
     .btn-secondary:hover {
       background: #f1f5f9;
       border-color: var(--navy);
     }
+
     .btn-accent {
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
       color: #fff;
-      box-shadow: 0 4px 14px rgba(59,130,246,.3);
+      box-shadow: 0 4px 14px rgba(59, 130, 246, .3);
     }
+
     .btn-accent:hover {
-      box-shadow: 0 6px 20px rgba(59,130,246,.4);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, .4);
       transform: translateY(-1px);
     }
 
@@ -397,7 +514,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.55);
+      background: rgba(0, 0, 0, .55);
       backdrop-filter: blur(6px);
       z-index: 1000;
       justify-content: center;
@@ -405,8 +522,21 @@
       padding: 1.5rem;
       animation: fadeBg .2s ease;
     }
-    .modal-overlay.active { display: flex; }
-    @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeBg {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
     .modal-content {
       background: #fff;
       border-radius: var(--radius);
@@ -417,10 +547,19 @@
       box-shadow: var(--shadow-lg);
       animation: modalIn .3s ease;
     }
+
     @keyframes modalIn {
-      from { opacity: 0; transform: scale(.92) translateY(12px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      from {
+        opacity: 0;
+        transform: scale(.92) translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
     }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
@@ -428,9 +567,15 @@
       padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
     }
-    .modal-header h3 { font-size: 1rem; color: var(--navy); }
+
+    .modal-header h3 {
+      font-size: 1rem;
+      color: var(--navy);
+    }
+
     .modal-close {
-      width: 32px; height: 32px;
+      width: 32px;
+      height: 32px;
       border: none;
       background: #f1f5f9;
       border-radius: 8px;
@@ -442,14 +587,24 @@
       color: var(--text-muted);
       transition: all var(--transition);
     }
-    .modal-close:hover { background: #e2e8f0; color: var(--text); }
-    .modal-body { padding: 1.25rem; text-align: center; }
+
+    .modal-close:hover {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+      text-align: center;
+    }
+
     .modal-body canvas,
     .modal-body iframe {
       width: 100%;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
     }
+
     .modal-footer {
       padding: .75rem 1.25rem;
       border-top: 1px solid var(--border);
@@ -476,7 +631,12 @@
       transition: all .3s ease;
       pointer-events: none;
     }
-    .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
 
     /* ── Footer ───────────────────────────────────────────── */
     .app-footer {
@@ -486,15 +646,242 @@
       font-size: .75rem;
     }
 
+    /* ── ESF Picker ──────────────────────────────────────── */
+    .esf-picker-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(15, 29, 58, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .esf-picker-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .esf-picker-card {
+      background: #fff;
+      border-radius: 24px;
+      width: 340px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px) scale(0.95);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .esf-picker-overlay.active .esf-picker-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .esf-picker-header {
+      padding: 1.25rem 1.5rem;
+      background: #f8fafc;
+      border-radius: 24px 24px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .esf-picker-title {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 1.1rem;
+    }
+
+    .esf-picker-close {
+      background: #e2e8f0;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+    }
+
+    .esf-picker-close:hover {
+      background: #cbd5e1;
+      color: var(--navy);
+    }
+
+    .picker-presets {
+      display: flex;
+      gap: 6px;
+      padding: 12px 24px 0;
+      justify-content: center;
+    }
+
+    .preset-btn {
+      flex: 1;
+      padding: 6px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--navy);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: #eef2ff;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .esf-picker-body {
+      padding: 2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .esf-stepper-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      border: none;
+      background: #f1f5f9;
+      color: var(--navy);
+      font-size: 2rem;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .esf-stepper-btn:active {
+      background: #e2e8f0;
+      transform: translateY(2px);
+      box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
+    }
+
+    .esf-wheel-container {
+      flex: 1;
+      height: 160px;
+      position: relative;
+      overflow: hidden;
+      mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+    }
+
+    .esf-wheel-selection-overlay {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 40px;
+      margin-top: -20px;
+      border-top: 2px solid var(--accent);
+      border-bottom: 2px solid var(--accent);
+      background: rgba(59, 130, 246, 0.08);
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    .esf-wheel-list {
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      padding: 60px 0;
+    }
+
+    .esf-wheel-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .esf-wheel-item {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      scroll-snap-align: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    .esf-wheel-item.active {
+      color: var(--accent);
+      font-size: 1.7rem;
+      font-weight: 800;
+      opacity: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .esf-picker-footer {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+      border-radius: 0 0 24px 24px;
+      background: #fff;
+    }
+
+    .esf-input-active {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .2) !important;
+      background: #eef2ff !important;
+      color: var(--accent) !important;
+      font-weight: 700 !important;
+    }
+
     /* ── Responsive ──────────────────────────────────────── */
     @media (max-width: 700px) {
-      .field-row.cols-3 { grid-template-columns: 1fr 1fr; }
-      .field-row.cols-4 { grid-template-columns: 1fr 1fr; }
-      .lente-prisma-row { grid-template-columns: 1fr; }
-      .checkbox-grid { grid-template-columns: 1fr 1fr; }
-      .btn-row { flex-direction: column; align-items: stretch; }
-      .btn { justify-content: center; }
-      .app-header h1 { font-size: 1.3rem; }
+      .field-row.cols-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .field-row.cols-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .lente-prisma-row {
+        grid-template-columns: 1fr;
+      }
+
+      .checkbox-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .btn-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        justify-content: center;
+      }
+
+      .app-header h1 {
+        font-size: 1.3rem;
+      }
     }
 
     /* ── Optometrist Config ──────────────────────────────── */
@@ -510,25 +897,45 @@
       border-radius: 6px;
       transition: all var(--transition);
     }
-    .config-toggle:hover { background: #f1f5f9; color: var(--text); }
+
+    .config-toggle:hover {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
     .config-fields {
       display: none;
       margin-top: .75rem;
     }
-    .config-fields.open { display: block; }
+
+    .config-fields.open {
+      display: block;
+    }
 
     /* ── Spinner ──────────────────────────────────────────── */
     .btn .spinner {
       display: none;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin .6s linear infinite;
     }
-    .btn.loading .spinner { display: inline-block; }
-    .btn.loading .btn-label { opacity: .6; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn.loading .spinner {
+      display: inline-block;
+    }
+
+    .btn.loading .btn-label {
+      opacity: .6;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
@@ -540,18 +947,19 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%">
         <defs>
           <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="100%" stop-color="#bfdbfe"/>
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="100%" stop-color="#bfdbfe" />
           </linearGradient>
         </defs>
         <!-- Formato do Olho -->
-        <path d="M24 128 C 72 48, 184 48, 232 128 C 184 208, 72 208, 24 128 Z" fill="none" stroke="url(#eyeGrad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M24 128 C 72 48, 184 48, 232 128 C 184 208, 72 208, 24 128 Z" fill="none" stroke="url(#eyeGrad)"
+          stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
         <!-- Íris e lente geométrica -->
-        <circle cx="128" cy="128" r="44" fill="none" stroke="#ffffff" stroke-width="16"/>
+        <circle cx="128" cy="128" r="44" fill="none" stroke="#ffffff" stroke-width="16" />
         <!-- Pupila -->
-        <circle cx="128" cy="128" r="16" fill="#ffffff"/>
+        <circle cx="128" cy="128" r="16" fill="#ffffff" />
         <!-- Brilho (Opcional, dá profundidade) -->
-        <circle cx="114" cy="114" r="6" fill="#ffffff" opacity="0.8"/>
+        <circle cx="114" cy="114" r="6" fill="#ffffff" opacity="0.8" />
       </svg>
     </div>
     <h1>Centro de Integração do Sistema Visual</h1>
@@ -594,9 +1002,9 @@
               <th rowspan="2" style="width:55px;"></th>
               <th rowspan="2" style="width:40px;"></th>
               <th colspan="3">Refração</th>
-              <th rowspan="2">AV c/c VL</th>
+              <th rowspan="2">AV/CC/VL</th>
               <th rowspan="2">ADD</th>
-              <th rowspan="2">AV c/c VP</th>
+              <th rowspan="2">AV/CC/VP</th>
             </tr>
             <tr>
               <th>ESF</th>
@@ -607,43 +1015,45 @@
           <tbody>
             <!-- LONGE -->
             <tr>
-              <td class="eye-label" rowspan="2" style="background:var(--navy);color:#fff;font-size:.72rem;letter-spacing:.08em;">LONGE</td>
+              <td class="eye-label" rowspan="2"
+                style="background:var(--navy);color:#fff;font-size:.72rem;letter-spacing:.08em;">LONGE</td>
               <td class="eye-label">OD</td>
               <td><input type="text" id="longe_od_esf" placeholder="±0.00" /></td>
-              <td><input type="text" id="longe_od_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_od_cil" placeholder="-0.00" /></td>
               <td><input type="text" id="longe_od_eixo" placeholder="0–180" /></td>
-              <td><input type="text" id="longe_od_avccvl" placeholder="0.0" /></td>
-              <td><input type="text" id="longe_od_add" placeholder="±0.00" /></td>
-              <td><input type="text" id="longe_od_avccvp" placeholder="0.0" /></td>
+              <td><input type="text" id="longe_od_avccvl" placeholder="20/20" /></td>
+              <td><input type="text" id="longe_od_add" placeholder="+0.00" /></td>
+              <td><input type="text" id="longe_od_avccvp" placeholder="J1" /></td>
             </tr>
             <tr>
               <td class="eye-label">OE</td>
               <td><input type="text" id="longe_oe_esf" placeholder="±0.00" /></td>
-              <td><input type="text" id="longe_oe_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="longe_oe_cil" placeholder="-0.00" /></td>
               <td><input type="text" id="longe_oe_eixo" placeholder="0–180" /></td>
-              <td><input type="text" id="longe_oe_avccvl" placeholder="0.0" /></td>
-              <td><input type="text" id="longe_oe_add" placeholder="±0.00" /></td>
-              <td><input type="text" id="longe_oe_avccvp" placeholder="0.0" /></td>
+              <td><input type="text" id="longe_oe_avccvl" placeholder="20/20" /></td>
+              <td><input type="text" id="longe_oe_add" placeholder="+0.00" /></td>
+              <td><input type="text" id="longe_oe_avccvp" placeholder="J1" /></td>
             </tr>
             <!-- PERTO -->
             <tr>
-              <td class="eye-label" rowspan="2" style="background:var(--navy);color:#fff;font-size:.72rem;letter-spacing:.08em;">PERTO</td>
+              <td class="eye-label" rowspan="2"
+                style="background:var(--navy);color:#fff;font-size:.72rem;letter-spacing:.08em;">PERTO</td>
               <td class="eye-label">OD</td>
               <td><input type="text" id="perto_od_esf" placeholder="±0.00" /></td>
-              <td><input type="text" id="perto_od_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_od_cil" placeholder="-0.00" /></td>
               <td><input type="text" id="perto_od_eixo" placeholder="0–180" /></td>
-              <td><input type="text" id="perto_od_avccvl" placeholder="0.0" /></td>
-              <td><input type="text" id="perto_od_add" placeholder="±0.00" /></td>
-              <td><input type="text" id="perto_od_avccvp" placeholder="0.0" /></td>
+              <td><input type="text" id="perto_od_avccvl" placeholder="20/20" /></td>
+              <td><input type="text" id="perto_od_add" placeholder="+0.00" /></td>
+              <td><input type="text" id="perto_od_avccvp" placeholder="J1" /></td>
             </tr>
             <tr>
               <td class="eye-label">OE</td>
               <td><input type="text" id="perto_oe_esf" placeholder="±0.00" /></td>
-              <td><input type="text" id="perto_oe_cil" placeholder="±0.00" /></td>
+              <td><input type="text" id="perto_oe_cil" placeholder="-0.00" /></td>
               <td><input type="text" id="perto_oe_eixo" placeholder="0–180" /></td>
-              <td><input type="text" id="perto_oe_avccvl" placeholder="0.0" /></td>
-              <td><input type="text" id="perto_oe_add" placeholder="±0.00" /></td>
-              <td><input type="text" id="perto_oe_avccvp" placeholder="0.0" /></td>
+              <td><input type="text" id="perto_oe_avccvl" placeholder="20/20" /></td>
+              <td><input type="text" id="perto_oe_add" placeholder="+0.00" /></td>
+              <td><input type="text" id="perto_oe_avccvp" placeholder="J1" /></td>
             </tr>
           </tbody>
         </table>
@@ -678,6 +1088,9 @@
             </label>
             <label class="checkbox-item" id="item-flt">
               <input type="checkbox" id="chk_flt" /><span>FLT</span>
+            </label>
+            <label class="checkbox-item" id="item-blue">
+              <input type="checkbox" id="chk_blue" /><span>Blue</span>
             </label>
           </div>
           <div class="field-group" style="margin-top:.75rem;">
@@ -743,8 +1156,8 @@
           <input type="text" id="inputOptNome" value="Amidio Jussa Ajape Paissane" />
         </div>
         <div class="field-group">
-          <label for="inputOptCRO">CRO</label>
-          <input type="text" id="inputOptCRO" value="Optometrista CRO0-SC 1312" />
+          <label for="inputOptCRO">CROO</label>
+          <input type="text" id="inputOptCRO" value="Optometrista CROO-SC 1312" />
         </div>
       </div>
     </section>
@@ -761,7 +1174,34 @@
     </div>
 
   </main>
-
+  <!-- ═══════════════ ESF Picker Modal ═══════════════ -->
+  <div class="esf-picker-overlay" id="esfPickerOverlay">
+    <div class="esf-picker-card">
+      <div class="esf-picker-header">
+        <span class="esf-picker-title" id="esfPickerTitle">Seletor</span>
+        <button class="esf-picker-close" id="esfPickerClose">&times;</button>
+      </div>
+      <div class="picker-presets" id="pickerPresets" style="display: none;">
+        <button class="preset-btn" data-val="0">0°</button>
+        <button class="preset-btn" data-val="45">45°</button>
+        <button class="preset-btn" data-val="90">90°</button>
+        <button class="preset-btn" data-val="135">135°</button>
+        <button class="preset-btn" data-val="180">180°</button>
+      </div>
+      <div class="esf-picker-body">
+        <button class="esf-stepper-btn" id="esfBtnMinus">&minus;</button>
+        <div class="esf-wheel-container">
+          <div class="esf-wheel-selection-overlay"></div>
+          <div class="esf-wheel-list" id="esfWheelList"></div>
+        </div>
+        <button class="esf-stepper-btn" id="esfBtnPlus">+</button>
+      </div>
+      <div class="esf-picker-footer">
+        <button class="btn btn-primary" style="width:100%; justify-content:center;"
+          id="esfPickerConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ═══════════════ Toast ═══════════════ -->
   <div class="toast" id="toast"></div>
@@ -788,6 +1228,253 @@
       $('inputData').value = `${yyyy}-${mm}-${dd}`;
       $('footerYear').textContent = yyyy;
     })();
+
+    /* ── Picker Logic ────────────────────────────── */
+    let pickerValues = [];
+    let currentPickerTargetId = null;
+    let currentPickerType = null;
+    let currentPickerIndex = 0;
+
+    const esfOverlay = $('esfPickerOverlay');
+    const esfWheelList = $('esfWheelList');
+
+    function populateWheel() {
+      esfWheelList.innerHTML = '';
+      pickerValues.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'esf-wheel-item';
+        div.textContent = item.text;
+        div.dataset.index = index;
+        div.addEventListener('click', () => setPickerIndex(index, true));
+        esfWheelList.appendChild(div);
+      });
+    }
+
+    function updateActiveItem(index) {
+      const items = esfWheelList.querySelectorAll('.esf-wheel-item');
+      items.forEach((el, i) => {
+        if (i === index) el.classList.add('active');
+        else el.classList.remove('active');
+      });
+    }
+
+    function setPickerIndex(index, smooth = false) {
+      if (index < 0) index = 0;
+      if (index >= pickerValues.length) index = pickerValues.length - 1;
+
+      if (smooth) {
+        esfWheelList.scrollTo({ top: index * 40, behavior: 'smooth' });
+      } else {
+        esfWheelList.scrollTop = index * 40;
+      }
+      currentPickerIndex = index;
+      updateActiveItem(index);
+    }
+
+    esfWheelList.addEventListener('scroll', () => {
+      const index = Math.round(esfWheelList.scrollTop / 40);
+      if (currentPickerIndex !== index) {
+        currentPickerIndex = index;
+        updateActiveItem(index);
+      }
+    });
+
+    function openPicker(inputId, type) {
+      currentPickerTargetId = inputId;
+      currentPickerType = type;
+      const inputEl = $(inputId);
+      const val = inputEl.value.trim();
+
+      pickerValues = [];
+      let defaultIndex = 0;
+
+      if (type === 'ESF') {
+        for (let i = -80; i <= 80; i++) {
+          let v = i * 0.25;
+          let text = v === 0 ? 'PL' : (v > 0 ? '+' + v.toFixed(2) : v.toFixed(2));
+          pickerValues.push({ value: v, text: text });
+        }
+        defaultIndex = 80; // PL
+      } else if (type === 'CIL') {
+        pickerValues.push({ value: '', text: '-- (Vazio)' });
+        pickerValues.push({ value: 0, text: 'PL' });
+        for (let i = 1; i <= 48; i++) { // up to -12.00
+          let v = -(i * 0.25);
+          pickerValues.push({ value: v, text: v.toFixed(2) });
+        }
+        defaultIndex = 0; // -- (Vazio)
+      } else if (type === 'EIXO') {
+        pickerValues.push({ value: '', text: '-- (Vazio)' });
+        for (let i = 0; i <= 180; i++) {
+          pickerValues.push({ value: i, text: i + '°' });
+        }
+        defaultIndex = 0; // -- (Vazio)
+      } else if (type === 'ADD') {
+        pickerValues.push({ value: '', text: '-- (Vazio)' });
+        for (let i = 1; i <= 16; i++) {
+          let v = i * 0.25;
+          pickerValues.push({ value: v, text: '+' + v.toFixed(2) });
+        }
+        defaultIndex = 0; // -- (Vazio)
+      } else if (type === 'AV_VL') {
+        pickerValues.push({ value: '', text: '-- (Vazio)' });
+        const vlOptions = ['20/20', '20/25', '20/30', '20/40', '20/50', '20/60', '20/80', '20/100', '20/200', '20/400'];
+        vlOptions.forEach(opt => pickerValues.push({ value: opt, text: opt }));
+        defaultIndex = 0;
+      } else if (type === 'AV_VP') {
+        pickerValues.push({ value: '', text: '-- (Vazio)' });
+        for (let i = 1; i <= 9; i++) {
+          pickerValues.push({ value: `J${i}+`, text: `J${i}+` });
+          pickerValues.push({ value: `J${i}`, text: `J${i}` });
+          pickerValues.push({ value: `J${i}-`, text: `J${i}-` });
+        }
+        pickerValues.push({ value: 'J10', text: 'J10' });
+        defaultIndex = 0;
+      }
+
+      populateWheel();
+
+      let title = type;
+      let colName = type;
+      if (type === 'AV_VL') colName = 'AV/CC/VL';
+      else if (type === 'AV_VP') colName = 'AV/CC/VP';
+
+      if (inputId.includes('longe_od')) title = `Longe - OD (${colName})`;
+      else if (inputId.includes('longe_oe')) title = `Longe - OE (${colName})`;
+      else if (inputId.includes('perto_od')) title = `Perto - OD (${colName})`;
+      else if (inputId.includes('perto_oe')) title = `Perto - OE (${colName})`;
+      $('esfPickerTitle').textContent = title;
+
+      let foundIndex = defaultIndex;
+      if (val !== '') {
+        let match = -1;
+        if (type === 'EIXO') {
+          match = pickerValues.findIndex(item => item.value.toString() === val);
+        } else {
+          match = pickerValues.findIndex(item => item.text === val || item.value.toString() === val);
+        }
+        if (match !== -1) foundIndex = match;
+      }
+
+      if (type === 'EIXO') {
+        $('pickerPresets').style.display = 'flex';
+      } else {
+        $('pickerPresets').style.display = 'none';
+      }
+
+      esfOverlay.classList.add('active');
+      inputEl.classList.add('esf-input-active');
+
+      setTimeout(() => {
+        setPickerIndex(foundIndex, false);
+      }, 10);
+    }
+
+    function closePicker() {
+      esfOverlay.classList.remove('active');
+      if (currentPickerTargetId) {
+        $(currentPickerTargetId).classList.remove('esf-input-active');
+      }
+      currentPickerTargetId = null;
+    }
+
+    function confirmPicker() {
+      if (currentPickerTargetId) {
+        let selectedItem = pickerValues[currentPickerIndex];
+        let valToSave = selectedItem.text;
+
+        if (selectedItem.value === '') {
+          valToSave = '';
+        } else if (currentPickerType === 'EIXO') {
+          valToSave = selectedItem.value; // Save just number
+        }
+
+        $(currentPickerTargetId).value = valToSave;
+      }
+      closePicker();
+    }
+
+    $('esfPickerClose').addEventListener('click', closePicker);
+    $('esfPickerConfirm').addEventListener('click', confirmPicker);
+    esfOverlay.addEventListener('mousedown', (e) => {
+      if (e.target === esfOverlay) closePicker();
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const val = parseInt(e.target.dataset.val);
+        const idx = pickerValues.findIndex(item => item.value === val);
+        if (idx !== -1) setPickerIndex(idx, true);
+      });
+    });
+
+    let stepperInterval;
+    let stepperTimeout;
+    const startStepper = (delta) => {
+      setPickerIndex(currentPickerIndex + delta, true);
+      stepperTimeout = setTimeout(() => {
+        stepperInterval = setInterval(() => {
+          setPickerIndex(currentPickerIndex + delta, false);
+        }, 80);
+      }, 400);
+    };
+    const stopStepper = () => {
+      clearTimeout(stepperTimeout);
+      clearInterval(stepperInterval);
+    };
+
+    const btnMinus = $('esfBtnMinus');
+    const btnPlus = $('esfBtnPlus');
+    const attachStepperEvents = (btn, delta) => {
+      btn.addEventListener('mousedown', () => startStepper(delta));
+      btn.addEventListener('mouseup', stopStepper);
+      btn.addEventListener('mouseleave', stopStepper);
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); startStepper(delta); }, { passive: false });
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); stopStepper(); }, { passive: false });
+    };
+    attachStepperEvents(btnMinus, -1);
+    attachStepperEvents(btnPlus, 1);
+
+    window.addEventListener('keydown', (e) => {
+      if (!esfOverlay.classList.contains('active')) return;
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setPickerIndex(currentPickerIndex + 1, true);
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setPickerIndex(currentPickerIndex - 1, true);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        confirmPicker();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closePicker();
+      }
+    });
+
+    const fieldsToSetup = [
+      { id: 'longe_od_esf', type: 'ESF' }, { id: 'longe_oe_esf', type: 'ESF' },
+      { id: 'perto_od_esf', type: 'ESF' }, { id: 'perto_oe_esf', type: 'ESF' },
+      { id: 'longe_od_cil', type: 'CIL' }, { id: 'longe_oe_cil', type: 'CIL' },
+      { id: 'perto_od_cil', type: 'CIL' }, { id: 'perto_oe_cil', type: 'CIL' },
+      { id: 'longe_od_eixo', type: 'EIXO' }, { id: 'longe_oe_eixo', type: 'EIXO' },
+      { id: 'perto_od_eixo', type: 'EIXO' }, { id: 'perto_oe_eixo', type: 'EIXO' },
+      { id: 'longe_od_avccvl', type: 'AV_VL' }, { id: 'longe_oe_avccvl', type: 'AV_VL' },
+      { id: 'perto_od_avccvl', type: 'AV_VL' }, { id: 'perto_oe_avccvl', type: 'AV_VL' },
+      { id: 'longe_od_add', type: 'ADD' }, { id: 'longe_oe_add', type: 'ADD' },
+      { id: 'perto_od_add', type: 'ADD' }, { id: 'perto_oe_add', type: 'ADD' },
+      { id: 'longe_od_avccvp', type: 'AV_VP' }, { id: 'longe_oe_avccvp', type: 'AV_VP' },
+      { id: 'perto_od_avccvp', type: 'AV_VP' }, { id: 'perto_oe_avccvp', type: 'AV_VP' }
+    ];
+
+    fieldsToSetup.forEach(f => {
+      const el = $(f.id);
+      if (el) {
+        el.readOnly = true;
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => openPicker(f.id, f.type));
+      }
+    });
 
     /* ── Checkbox visual toggle ────────────────────── */
     document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
@@ -838,9 +1525,9 @@
       const doc = new jsPDF({ unit: 'mm', format: 'a5', orientation: 'portrait' });
 
       // ── Margins (mm) ───────────────────────────────
-      const marginTop    = 44;   // 4.4 cm – reserved for pre-printed logo area height
-      const marginLeft   = 7.5;  // margem esquerda (centralizando)
-      const marginRight  = 7.5;  // margem direita (centralizando)
+      const marginTop = 44;   // 4.4 cm – reserved for pre-printed logo area height
+      const marginLeft = 7.5;  // margem esquerda (centralizando)
+      const marginRight = 7.5;  // margem direita (centralizando)
       const marginBottom = 25;   // 2.5 cm – reserved for pre-printed footer
       const pageW = 148;
       const pageH = 210;
@@ -864,8 +1551,8 @@
       const drawCheck = (x, y, s) => {
         doc.setDrawColor(...navy);
         doc.setLineWidth(0.4);
-        doc.line(x + s*0.25, y + s*0.5, x + s*0.45, y + s*0.75);
-        doc.line(x + s*0.45, y + s*0.75, x + s*0.85, y + s*0.2);
+        doc.line(x + s * 0.25, y + s * 0.5, x + s * 0.45, y + s * 0.75);
+        doc.line(x + s * 0.45, y + s * 0.75, x + s * 0.85, y + s * 0.2);
       };
 
       // ── Bloco 1: Patient info & Header ─────────────────────
@@ -879,7 +1566,7 @@
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.5);
-      
+
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(...navy);
       doc.text('PACIENTE:', topInfoX, topY);
@@ -904,7 +1591,7 @@
 
       // Title Section
       y = marginTop + 4;
-      
+
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(13);
       doc.setTextColor(...navy);
@@ -920,14 +1607,14 @@
       // ── Bloco 3: Tabela de graus ───────────────────
       const tableX = marginLeft;
       const tableCols = [
-        { label: '',        w: 13 },
-        { label: '',        w: 10 },
-        { label: 'ESF',     w: 14 },
-        { label: 'CIL',     w: 14 },
-        { label: 'EIXO',    w: 13 },
-        { label: 'AV c/c VL', w: 18 },
-        { label: 'ADD',     w: 14 },
-        { label: 'AV c/c VP', w: 18 },
+        { label: '', w: 13 },
+        { label: '', w: 10 },
+        { label: 'ESF', w: 14 },
+        { label: 'CIL', w: 14 },
+        { label: 'EIXO', w: 13 },
+        { label: 'AV/CC/VL', w: 18 },
+        { label: 'ADD', w: 14 },
+        { label: 'AV/CC/VP', w: 18 },
       ];
       let totalTableW = tableCols.reduce((s, c) => s + c.w, 0);
       // Scale to fit content width
@@ -961,7 +1648,7 @@
       sections.forEach(sec => {
         const secStart = y;
         const secKey = sec.toLowerCase();
-        
+
         eyes.forEach((eye, ei) => {
           cx = tableX;
           // Draw row borders
@@ -990,12 +1677,12 @@
             const colDef = tableCols[fi + 2];
             doc.setDrawColor(...lightGray);
             doc.rect(cx, y, colDef.w, rowH);
-            
+
             let v = val(`${secKey}_${eye.toLowerCase()}_${fld}`);
-            
+
             // Fixed degree sign for EIXO
             if (fld === 'eixo') {
-              v = v ? v + '°' : '°';
+              v = v ? v + '°' : '';
             }
 
             doc.text(v || '', cx + colDef.w / 2, y + rowH / 2 + 2, { align: 'center' });
@@ -1011,7 +1698,7 @@
         doc.setLineWidth(0.3);
         doc.rect(tableX, secStart, tableCols[0].w, rowH * 2, 'F');
         doc.rect(tableX, secStart, tableCols[0].w, rowH * 2);
-        
+
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(6.5);
         doc.setTextColor(...white);
@@ -1039,6 +1726,7 @@
         ['Antirreflexo', 'chk_antirreflexo'],
         ['Fotocromático', 'chk_fotocromatico'],
         ['FLT', 'chk_flt'],
+        ['Blue', 'chk_blue'],
       ];
 
       doc.setFont('helvetica', 'normal');
@@ -1069,8 +1757,8 @@
       });
 
       // Outros
-      const outrosX = marginLeft + boxPad + colWidth; // alinhado na segunda coluna
-      const outrosY = startY + 3 * cbGap; // embaixo de FLT
+      const outrosX = marginLeft + boxPad; // alinhado na primeira coluna
+      const outrosY = startY + 4 * cbGap; // embaixo da última linha
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
       doc.text('OUTROS:', outrosX, outrosY + 0.3);
@@ -1092,7 +1780,7 @@
       doc.text('OE:', prismaX, startY + 8);
       doc.text(val('prisma_oe'), prismaX + 7, startY + 8);
 
-      y = startY + 3 * cbGap + 3;
+      y = startY + 4 * cbGap + 4;
 
       // Separador
       doc.setDrawColor(...lightGray);
@@ -1144,9 +1832,9 @@
         doc.setLineWidth(0.2);
         doc.line(marginLeft, y, marginLeft + contentW, y);
         y += 2;
-        
+
         y += boxPad;
-        
+
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(8.5);
         doc.setTextColor(...navy);
@@ -1157,7 +1845,7 @@
         doc.setFontSize(7.5);
         doc.setTextColor(...black);
         if (obs) {
-          const obsLines = doc.splitTextToSize(obs, contentW - boxPad*2);
+          const obsLines = doc.splitTextToSize(obs, contentW - boxPad * 2);
           doc.text(obsLines, marginLeft + boxPad, y);
           y += obsLines.length * 4;
         }
@@ -1172,7 +1860,7 @@
         }
         y += boxPad - 1;
       }
-      
+
       // Desenhar Caixa Única: Lente + Uso + Obs
       doc.setDrawColor(...lightGray);
       doc.setLineWidth(0.3);
@@ -1223,12 +1911,12 @@
         const doc = buildPDF();
         const paciente = val('inputPaciente').replace(/\s+/g, '').toLowerCase();
         const idade = val('inputIdade');
-        
+
         let filename = 'prescricao.pdf';
         if (paciente) {
           filename = `${paciente}${idade ? idade : ''}.pdf`;
         }
-        
+
         doc.save(filename);
         showToast('PDF gerado com sucesso ✓');
       } catch (e) {
@@ -1239,4 +1927,5 @@
     }
   </script>
 </body>
+
 </html>
